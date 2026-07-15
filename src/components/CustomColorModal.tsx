@@ -23,7 +23,7 @@ export function CustomColorModal({
   }
 
   return (
-    <div className="modal-overlay" role="dialog" aria-label="Custom color picker">
+    <div className="modal-overlay" role="dialog" aria-label="Custom color picker" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="modal">
         <div className="modal-header">
           <span className="modal-title">CUSTOM COLORS</span>
