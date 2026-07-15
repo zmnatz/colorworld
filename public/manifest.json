@@ -2,14 +2,14 @@
   "name": "Colorworld",
   "short_name": "Colorworld",
   "description": "A fun color-mixing game for kids",
-  "start_url": "/",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#fdf6ee",
   "theme_color": "#fdf6ee",
   "orientation": "any",
   "icons": [
     {
-      "src": "/favicon.svg",
+      "src": "favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

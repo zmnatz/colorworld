@@ -1,9 +1,10 @@
 const CACHE_NAME = "colorworld-v1";
-const ASSETS = ["/", "/index.html"];
 
 self.addEventListener("install", (event) => {
+  const base = self.location.pathname.replace(/\/[^/]*$/, "/");
+  const assets = [base, `${base}index.html`];
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)),
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(assets)),
   );
   self.skipWaiting();
 });
