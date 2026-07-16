@@ -49,8 +49,10 @@ interface ColorPickerSquareProps {
 
 export function ColorPickerSquare({ rgb, onChange }: ColorPickerSquareProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const draggingRef = useRef<"picker" | "hue" | null>(null);
   const hsvRef = useRef(rgbToHsv(rgb));
+  const draggingRef = useRef<"picker" | "hue" | null>(null);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
 
   useEffect(() => {
     hsvRef.current = rgbToHsv(rgb);
@@ -116,7 +118,7 @@ export function ColorPickerSquare({ rgb, onChange }: ColorPickerSquareProps) {
     draw();
   }, [draw, rgb]);
 
-  // Size canvas to fill container — derive height from width at 4:3
+  // Size canvas
   useLayoutEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -144,69 +146,79 @@ export function ColorPickerSquare({ rgb, onChange }: ColorPickerSquareProps) {
     };
   }, [draw]);
 
-  function getCanvasPos(e: React.PointerEvent<HTMLCanvasElement>): { x: number; y: number } | null {
-    const canvas = canvasRef.current;
-    if (!canvas) return null;
-    const rect = canvas.getBoundingClientRect();
-    if (rect.width === 0 || rect.height === 0) return null;
-    return {
-      x: ((e.clientX - rect.left) / rect.width) * canvas.width,
-      y: ((e.clientY - rect.top) / rect.height) * canvas.height,
-    };
-  }
-
-  function handlePointerDown(e: React.PointerEvent<HTMLCanvasElement>) {
+  // Native pointer event handling — bypasses React synthetic events
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const pos = getCanvasPos(e);
-    if (!pos) return;
 
-    canvas.setPointerCapture(e.pointerId);
-    const pickerW = canvas.width - HUE_WIDTH_PX - HUE_GAP_PX;
-    draggingRef.current = pos.x > pickerW + HUE_GAP_PX / 2 ? "hue" : "picker";
-    applyPointer(pos.x, pos.y, pickerW, canvas.height);
-  }
-
-  function handlePointerMove(e: React.PointerEvent<HTMLCanvasElement>) {
-    if (!draggingRef.current) return;
-    const pos = getCanvasPos(e);
-    if (!pos) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const pickerW = canvas.width - HUE_WIDTH_PX - HUE_GAP_PX;
-    applyPointer(pos.x, pos.y, pickerW, canvas.height);
-  }
-
-  function handlePointerUp(e: React.PointerEvent<HTMLCanvasElement>) {
-    const canvas = canvasRef.current;
-    if (canvas) canvas.releasePointerCapture(e.pointerId);
-    draggingRef.current = null;
-  }
-
-  function applyPointer(x: number, y: number, pickerW: number, h: number) {
-    const hsv = { ...hsvRef.current };
-
-    if (draggingRef.current === "hue") {
-      hsv.h = Math.max(0, Math.min(360, (y / h) * 360));
-    } else {
-      hsv.s = Math.max(0, Math.min(1, x / pickerW));
-      hsv.v = Math.max(0, Math.min(1, 1 - y / h));
+    function canvasPos(e: PointerEvent): { x: number; y: number } | null {
+      const rect = canvas!.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return null;
+      return {
+        x: ((e.clientX - rect.left) / rect.width) * canvas!.width,
+        y: ((e.clientY - rect.top) / rect.height) * canvas!.height,
+      };
     }
 
-    hsvRef.current = hsv;
-    onChange(hsvToRgb(hsv.h, hsv.s, hsv.v));
-  }
+    function isHue(x: number): boolean {
+      const pickerW = canvas!.width - HUE_WIDTH_PX - HUE_GAP_PX;
+      return x > pickerW + HUE_GAP_PX / 2;
+    }
+
+    function apply(x: number, y: number) {
+      const pickerW = canvas!.width - HUE_WIDTH_PX - HUE_GAP_PX;
+      const h = canvas!.height;
+      const hsv = { ...hsvRef.current };
+
+      if (isHue(x)) {
+        hsv.h = Math.max(0, Math.min(360, (y / h) * 360));
+      } else {
+        hsv.s = Math.max(0, Math.min(1, x / pickerW));
+        hsv.v = Math.max(0, Math.min(1, 1 - y / h));
+      }
+
+      hsvRef.current = hsv;
+      onChangeRef.current(hsvToRgb(hsv.h, hsv.s, hsv.v));
+    }
+
+    function onDown(e: PointerEvent) {
+      const pos = canvasPos(e);
+      if (!pos) return;
+      canvas!.setPointerCapture(e.pointerId);
+      draggingRef.current = isHue(pos.x) ? "hue" : "picker";
+      apply(pos.x, pos.y);
+    }
+
+    function onMove(e: PointerEvent) {
+      if (!draggingRef.current) return;
+      const pos = canvasPos(e);
+      if (!pos) return;
+      apply(pos.x, pos.y);
+    }
+
+    function onUp(e: PointerEvent) {
+      if (canvas!.hasPointerCapture(e.pointerId)) {
+        canvas!.releasePointerCapture(e.pointerId);
+      }
+      draggingRef.current = null;
+    }
+
+    canvas.addEventListener("pointerdown", onDown);
+    canvas.addEventListener("pointermove", onMove);
+    canvas.addEventListener("pointerup", onUp);
+    canvas.addEventListener("pointercancel", onUp);
+
+    return () => {
+      canvas.removeEventListener("pointerdown", onDown);
+      canvas.removeEventListener("pointermove", onMove);
+      canvas.removeEventListener("pointerup", onUp);
+      canvas.removeEventListener("pointercancel", onUp);
+    };
+  }, []);
 
   return (
     <div className="picker-container">
-      <canvas
-        ref={canvasRef}
-        className="picker-canvas"
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-      />
+      <canvas ref={canvasRef} className="picker-canvas" />
     </div>
   );
 }
