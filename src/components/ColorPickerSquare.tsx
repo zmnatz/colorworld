@@ -54,10 +54,6 @@ export function ColorPickerSquare({ rgb, onChange }: ColorPickerSquareProps) {
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
 
-  useEffect(() => {
-    hsvRef.current = rgbToHsv(rgb);
-  }, [rgb]);
-
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;

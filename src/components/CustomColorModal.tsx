@@ -16,7 +16,7 @@ export function CustomColorModal({
   onRemove,
   onClose,
 }: CustomColorModalProps) {
-  const [rgb, setRgb] = useState<RGB>({ r: 128, g: 128, b: 128 });
+  const [rgb, setRgb] = useState<RGB>({ r: 255, g: 100, b: 50 });
 
   function handleAdd() {
     onAdd(rgb);
