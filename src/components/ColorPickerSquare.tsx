@@ -72,7 +72,6 @@ export function ColorPickerSquare({ rgb, onChange }: ColorPickerSquareProps) {
 
     ctx.clearRect(0, 0, w, h);
 
-    // Saturation–brightness square via two layered gradients
     const hueRgb = hsvToRgb(hsv.h, 1, 1);
 
     const satGrad = ctx.createLinearGradient(0, 0, pickerW, 0);
@@ -87,14 +86,12 @@ export function ColorPickerSquare({ rgb, onChange }: ColorPickerSquareProps) {
     ctx.fillStyle = valGrad;
     ctx.fillRect(0, 0, pickerW, h);
 
-    // Hue strip
     const hueX = pickerW + HUE_GAP_PX;
     for (let y = 0; y < h; y++) {
       ctx.fillStyle = `hsl(${(y / h) * 360}, 100%, 50%)`;
       ctx.fillRect(hueX, y, HUE_WIDTH_PX, 1);
     }
 
-    // Hue indicator
     const hy = (hsv.h / 360) * h;
     ctx.strokeStyle = "rgba(255,255,255,0.9)";
     ctx.lineWidth = 2;
@@ -102,7 +99,6 @@ export function ColorPickerSquare({ rgb, onChange }: ColorPickerSquareProps) {
     ctx.arc(hueX + HUE_WIDTH_PX / 2, hy, HUE_WIDTH_PX / 2 - 2, 0, Math.PI * 2);
     ctx.stroke();
 
-    // Picker cursor
     const cx = hsv.s * (pickerW - 1);
     const cy = (1 - hsv.v) * (h - 1);
     ctx.beginPath();
@@ -117,12 +113,11 @@ export function ColorPickerSquare({ rgb, onChange }: ColorPickerSquareProps) {
     ctx.stroke();
   }, []);
 
-  // Re-draw whenever the color changes
   useEffect(() => {
     draw();
   }, [draw, rgb]);
 
-  // Sync canvas bitmap size to CSS display size
+  // Size canvas to fill container
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
@@ -132,7 +127,7 @@ export function ColorPickerSquare({ rgb, onChange }: ColorPickerSquareProps) {
       const rect = container!.getBoundingClientRect();
       const w = Math.round(rect.width);
       const h = Math.round(rect.height);
-      if (canvas!.width !== w || canvas!.height !== h) {
+      if (w > 0 && h > 0 && (canvas!.width !== w || canvas!.height !== h)) {
         canvas!.width = w;
         canvas!.height = h;
         draw();
@@ -145,40 +140,37 @@ export function ColorPickerSquare({ rgb, onChange }: ColorPickerSquareProps) {
     return () => ro.disconnect();
   }, [draw]);
 
-  // Pointer handling — work in CSS pixels, map to 0..1 ranges
-  function getPointerPos(e: React.PointerEvent<HTMLCanvasElement>) {
+  function getCanvasPos(e: React.PointerEvent<HTMLCanvasElement>): { x: number; y: number } | null {
     const canvas = canvasRef.current;
     if (!canvas) return null;
     const rect = canvas.getBoundingClientRect();
-    const cssX = e.clientX - rect.left;
-    const cssY = e.clientY - rect.top;
-    const cssW = rect.width;
-    const cssH = rect.height;
-    // Map to canvas bitmap coordinates
-    const canvasX = (cssX / cssW) * canvas.width;
-    const canvasY = (cssY / cssH) * canvas.height;
-    return { canvasX, canvasY, cssW, cssH };
+    if (rect.width === 0 || rect.height === 0) return null;
+    return {
+      x: ((e.clientX - rect.left) / rect.width) * canvas.width,
+      y: ((e.clientY - rect.top) / rect.height) * canvas.height,
+    };
   }
 
   function handlePointerDown(e: React.PointerEvent<HTMLCanvasElement>) {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    canvas.setPointerCapture(e.pointerId);
-    const pos = getPointerPos(e);
+    const pos = getCanvasPos(e);
     if (!pos) return;
+
+    canvas.setPointerCapture(e.pointerId);
     const pickerW = canvas.width - HUE_WIDTH_PX - HUE_GAP_PX;
-    draggingRef.current = pos.canvasX > pickerW + HUE_GAP_PX / 2 ? "hue" : "picker";
-    applyPointer(pos.canvasX, pos.canvasY, pickerW, canvas.height);
+    draggingRef.current = pos.x > pickerW + HUE_GAP_PX / 2 ? "hue" : "picker";
+    applyPointer(pos.x, pos.y, pickerW, canvas.height);
   }
 
   function handlePointerMove(e: React.PointerEvent<HTMLCanvasElement>) {
     if (!draggingRef.current) return;
+    const pos = getCanvasPos(e);
+    if (!pos) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const pos = getPointerPos(e);
-    if (!pos) return;
     const pickerW = canvas.width - HUE_WIDTH_PX - HUE_GAP_PX;
-    applyPointer(pos.canvasX, pos.canvasY, pickerW, canvas.height);
+    applyPointer(pos.x, pos.y, pickerW, canvas.height);
   }
 
   function handlePointerUp(e: React.PointerEvent<HTMLCanvasElement>) {
