@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useLayoutEffect, useCallback } from "react";
 import type { RGB } from "../utils/colors";
 
 function hsvToRgb(h: number, s: number, v: number): RGB {
@@ -117,8 +117,8 @@ export function ColorPickerSquare({ rgb, onChange }: ColorPickerSquareProps) {
     draw();
   }, [draw, rgb]);
 
-  // Size canvas to fill container
-  useEffect(() => {
+  // Size canvas to fill container — useLayoutEffect for sync initial paint
+  useLayoutEffect(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
     if (!canvas || !container) return;
@@ -135,9 +135,14 @@ export function ColorPickerSquare({ rgb, onChange }: ColorPickerSquareProps) {
     }
 
     syncSize();
+    // Retry after modal animation settles
+    const t = setTimeout(syncSize, 50);
     const ro = new ResizeObserver(syncSize);
     ro.observe(container);
-    return () => ro.disconnect();
+    return () => {
+      clearTimeout(t);
+      ro.disconnect();
+    };
   }, [draw]);
 
   function getCanvasPos(e: React.PointerEvent<HTMLCanvasElement>): { x: number; y: number } | null {
