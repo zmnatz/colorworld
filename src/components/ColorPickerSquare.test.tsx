@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, fireEvent } from "@testing-library/react";
 import { ColorPickerSquare } from "./ColorPickerSquare";
 import type { RGB } from "../utils/colors";
 
@@ -96,7 +96,6 @@ describe("ColorPickerSquare", () => {
     // Click hue strip at y=75 (should set h ≈ 90°, s stays 0)
     pointerDown(canvas, 380, 75);
     expect(onChange).toHaveBeenCalled();
-    const afterHue = onChange.mock.calls.at(-1)![0] as RGB;
 
     // Now click the square to increase saturation
     onChange.mockClear();

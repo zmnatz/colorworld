@@ -11,7 +11,7 @@ class ResizeObserverMock {
 }
 globalThis.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
 
-HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue({
+(HTMLCanvasElement.prototype as any).getContext = vi.fn().mockReturnValue({
   clearRect: vi.fn(),
   createLinearGradient: vi.fn().mockReturnValue({
     addColorStop: vi.fn(),
@@ -20,7 +20,7 @@ HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue({
   beginPath: vi.fn(),
   arc: vi.fn(),
   stroke: vi.fn(),
-}) as unknown as CanvasRenderingContext2D;
+});
 
 HTMLCanvasElement.prototype.toDataURL = vi.fn().mockReturnValue("");
 
