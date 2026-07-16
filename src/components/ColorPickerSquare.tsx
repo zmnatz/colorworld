@@ -49,7 +49,6 @@ interface ColorPickerSquareProps {
 
 export function ColorPickerSquare({ rgb, onChange }: ColorPickerSquareProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef<"picker" | "hue" | null>(null);
   const hsvRef = useRef(rgbToHsv(rgb));
 
@@ -117,28 +116,28 @@ export function ColorPickerSquare({ rgb, onChange }: ColorPickerSquareProps) {
     draw();
   }, [draw, rgb]);
 
-  // Size canvas to fill container — useLayoutEffect for sync initial paint
+  // Size canvas to fill container — derive height from width at 4:3
   useLayoutEffect(() => {
     const canvas = canvasRef.current;
-    const container = containerRef.current;
-    if (!canvas || !container) return;
+    if (!canvas) return;
 
     function syncSize() {
-      const rect = container!.getBoundingClientRect();
-      const w = Math.round(rect.width);
-      const h = Math.round(rect.height);
-      if (w > 0 && h > 0 && (canvas!.width !== w || canvas!.height !== h)) {
-        canvas!.width = w;
-        canvas!.height = h;
-        draw();
+      const w = canvas!.offsetWidth;
+      if (w > 0) {
+        const h = Math.round(w * 0.75);
+        canvas!.style.height = `${h}px`;
+        if (canvas!.width !== w || canvas!.height !== h) {
+          canvas!.width = w;
+          canvas!.height = h;
+          draw();
+        }
       }
     }
 
     syncSize();
-    // Retry after modal animation settles
     const t = setTimeout(syncSize, 50);
     const ro = new ResizeObserver(syncSize);
-    ro.observe(container);
+    ro.observe(canvas);
     return () => {
       clearTimeout(t);
       ro.disconnect();
@@ -199,7 +198,7 @@ export function ColorPickerSquare({ rgb, onChange }: ColorPickerSquareProps) {
   }
 
   return (
-    <div ref={containerRef} className="picker-container">
+    <div className="picker-container">
       <canvas
         ref={canvasRef}
         className="picker-canvas"
