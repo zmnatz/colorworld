@@ -135,7 +135,7 @@
 
 .palette-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 8px;
   justify-items: center;
   width: 100%;
@@ -157,7 +157,7 @@
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   width: 100%;
-  max-width: 100px;
+  max-width: 130px;
 }
 
 .color-btn:active {
@@ -175,8 +175,8 @@
 }
 
 .color-swatch {
-  width: min(11vw, 60px);
-  height: min(11vw, 60px);
+  width: min(14vw, 78px);
+  height: min(14vw, 78px);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -199,7 +199,7 @@
 }
 
 .color-label {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
   color: var(--text);
   letter-spacing: 0.3px;
@@ -414,7 +414,7 @@
   }
 
   .palette-grid {
-    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
     gap: 6px;
     align-content: center;
   }
@@ -425,8 +425,8 @@
   }
 
   .color-swatch {
-    width: min(5vw, 44px);
-    height: min(5vw, 44px);
+    width: min(6vw, 52px);
+    height: min(6vw, 52px);
   }
 
   .color-label {
@@ -454,12 +454,12 @@
   }
 
   .color-swatch {
-    width: 42px;
-    height: 42px;
+    width: 48px;
+    height: 48px;
   }
 
   .color-label {
-    font-size: 7px;
+    font-size: 8px;
   }
 
   .palette-area {

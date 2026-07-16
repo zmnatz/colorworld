@@ -13,14 +13,22 @@ export interface ColorPreset {
 
 export const PRESETS: ColorPreset[] = [
   { name: "Red", label: "RED", rgb: { r: 255, g: 0, b: 0 }, note: "C4" },
-  { name: "Orange", label: "ORANGE", rgb: { r: 255, g: 128, b: 0 }, note: "D4" },
-  { name: "Yellow", label: "YELLOW", rgb: { r: 255, g: 255, b: 0 }, note: "E4" },
-  { name: "Green", label: "GREEN", rgb: { r: 0, g: 255, b: 0 }, note: "G4" },
-  { name: "Cyan", label: "CYAN", rgb: { r: 0, g: 255, b: 255 }, note: "A4" },
-  { name: "Blue", label: "BLUE", rgb: { r: 0, g: 0, b: 255 }, note: "B4" },
-  { name: "Purple", label: "PURPLE", rgb: { r: 128, g: 0, b: 255 }, note: "C5" },
-  { name: "Pink", label: "PINK", rgb: { r: 255, g: 0, b: 255 }, note: "D5" },
-  { name: "White", label: "WHITE", rgb: { r: 255, g: 255, b: 255 }, note: "E5" },
+  { name: "Coral", label: "CORAL", rgb: { r: 255, g: 127, b: 80 }, note: "D4" },
+  { name: "Orange", label: "ORANGE", rgb: { r: 255, g: 165, b: 0 }, note: "E4" },
+  { name: "Gold", label: "GOLD", rgb: { r: 255, g: 215, b: 0 }, note: "F#4" },
+  { name: "Yellow", label: "YELLOW", rgb: { r: 255, g: 255, b: 0 }, note: "G4" },
+  { name: "Lime", label: "LIME", rgb: { r: 128, g: 255, b: 0 }, note: "A4" },
+  { name: "Green", label: "GREEN", rgb: { r: 0, g: 200, b: 0 }, note: "B4" },
+  { name: "Teal", label: "TEAL", rgb: { r: 0, g: 128, b: 128 }, note: "C5" },
+  { name: "Cyan", label: "CYAN", rgb: { r: 0, g: 255, b: 255 }, note: "D5" },
+  { name: "Sky", label: "SKY", rgb: { r: 135, g: 206, b: 235 }, note: "E5" },
+  { name: "Blue", label: "BLUE", rgb: { r: 0, g: 100, b: 255 }, note: "F#5" },
+  { name: "Indigo", label: "INDIGO", rgb: { r: 75, g: 0, b: 130 }, note: "G5" },
+  { name: "Purple", label: "PURPLE", rgb: { r: 128, g: 0, b: 255 }, note: "A5" },
+  { name: "Magenta", label: "MAGENTA", rgb: { r: 255, g: 0, b: 255 }, note: "B5" },
+  { name: "Pink", label: "PINK", rgb: { r: 255, g: 105, b: 180 }, note: "C6" },
+  { name: "Lavender", label: "LAVENDER", rgb: { r: 200, g: 162, b: 200 }, note: "D6" },
+  { name: "White", label: "WHITE", rgb: { r: 255, g: 255, b: 255 }, note: "E6" },
 ];
 
 export const EMPTY_COLOR: RGB = { r: 30, g: 30, b: 40 };

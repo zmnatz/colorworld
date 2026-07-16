@@ -20,6 +20,11 @@ const NOTE_FREQS: Record<string, number> = {
   E5: 659.25,
   "F#5": 739.99,
   G5: 783.99,
+  A5: 880.0,
+  B5: 987.77,
+  C6: 1046.50,
+  D6: 1174.66,
+  E6: 1318.51,
 };
 
 export function playNote(note: string): void {
