@@ -30,3 +30,17 @@ If you are developing a production application, we recommend enabling type-aware
 ```
 
 See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+
+## Testing
+
+```bash
+npm test
+```
+
+Uses Vitest with jsdom and `@testing-library/react`.
+
+**Test setup** (`src/test-setup.ts`): mocks for `ResizeObserver`, canvas `getContext`, and pointer capture methods needed for jsdom.
+
+**Test files:**
+- `src/utils/colors.test.ts` — `mixColors`, `recognizeColor`, `formatResult`, `PRESETS` structure
+- `src/components/ColorPickerSquare.test.tsx` — pointer event interactions on the color picker (hue strip clicks, square clicks, drag continuity, hue preservation at zero saturation, pointer capture lifecycle)
